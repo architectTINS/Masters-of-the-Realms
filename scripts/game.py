@@ -84,8 +84,20 @@ def set_player_choices_for_the_round(round_num):
     price = call_or_invoke("game", "call", "set_choices_for_the_round", inputs, network); print(price)
 
 def init_pearls_for_all_players():
-    out = call_or_invoke("game", "call", "init_pearls_for_all_players", [num_players], network)
-    print(out)
+    out = wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "init_pearls_for_all_players", [num_players])
+    print(f"sent: {out}")
+    out = call_or_invoke("game", "call", "get_pearls_balance", [3,0], network)
+    print(f"get 3: {out}")
+    out = call_or_invoke("game", "call", "get_pearls_balance", [2,0], network)
+    print(f"get 2: {out}")
+    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_pearls_balance", [2, 0, 51000])
+    out = call_or_invoke("game", "call", "get_pearls_balance", [2,0], network)
+    print(f"get 2: {out}")
+    out = call_or_invoke("game", "call", "test_get_balance", None, network)
+    print(f"test: {out}")
+    #out = call_or_invoke("game", "call", "init_pearls_for_all_players", [num_players], network)
+    #print(out)
+
 
 def main():
     #create_keys()

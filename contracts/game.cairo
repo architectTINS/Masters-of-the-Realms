@@ -149,24 +149,32 @@ func set_choices_for_the_round{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
 @external
 func init_pearls_for_all_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     num: felt
-) -> (res: felt) {
+) -> () {
 
     alloc_locals;
 
-    local balance = Game.INITIAL_PEARL_BALANCE;
-    let round = 0;
+    if (num == 0) {
+        local player_id = num;
+        local round = 0;
+        local balance = Game.INITIAL_PEARL_BALANCE;
 
-    pearls_balance.write(0, round, balance);
-    pearls_balance.write(1, round, balance);
-    pearls_balance.write(2, round, balance);
-    pearls_balance.write(3, round, balance);
-    pearls_balance.write(4, round, balance);
-    pearls_balance.write(5, round, balance);
-    pearls_balance.write(6, round, balance);
-    pearls_balance.write(7, round, balance);
-    pearls_balance.write(8, round, balance);
+        pearls_balance.write(player_id, round, balance);
+        return (res = 0);
+    } else {
+        local player_id = num - 1;
+        local remaining_players = player_id;
+        local round = 0;
+        local balance = Game.INITIAL_PEARL_BALANCE;
 
-    let (res) = get_pearls_balance(2, 0);
+        pearls_balance.write(player_id, round, balance);
 
-    return(res=res);
+        init_pearls_for_all_players(remaining_players);
+    }
+}
+
+@view
+func test_get_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+) -> (res: felt){
+    let (res) = pearls_balance.read(2, 0);
+    return (res=res);
 }
