@@ -6,3 +6,8 @@ MMO Maritime trading strategy game setup in the loot realms ecosystem
  - setup trading post to buy-low and sell-high across 76,775 harbours on the 8000 realms
 
 Adventurers, come choose your path to be a mariner, a ship-builder or a merchant and discover what it takes to be Masters of the Realms.
+
+
+
+
+Module 1: Dynamic markets based on VRGDA (Variable Rate Gradual Dutch Auction) model
