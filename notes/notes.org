@@ -1,0 +1,58 @@
+PLAYERS
+  - Number of players     : 9
+
+CURRENCY
+  - Initial currency      : 100,000 pearls (There should be enough money. check and change this later.)
+  - Distance to travel    : 100kms
+
+TRAVEL
+  - Travel rate           : 10km per hour
+  - Total time for travel : 10 hours
+
+ENERGY
+  - Energy required to travel for 1km                        : 2 Energy Units (EU)
+  - Energy required to travel for 10kms                      : 20 EU
+  - Energy required to travel for total travel 100kms        : 200 EU.
+  - Total energy required per hour for all players per hours : 20 x 9 = 180 EU
+
+MARKET
+  - Number of markets : 3 = R, G, B
+  - Schedule for each market per hour : 180 EU/3 = Expected to sell 60 EU.
+  - Starting EU price : 50 pearls.
+
+Variables in equation
+  - p0 = target price = 50 pearls
+  - k = decay rate with no purchases (or with less than schedule) = 10%
+  - f(t) = issuance schedule = 60 EU per hour = 60(t)
+
+Logic and requirements
+  - market id needs to be stored too since 3 markets are involved.
+  - quantity sold so far need to be tracked too.
+  - Change the logic to say that players have to buy EU to start travelling.
+    - No. This will not work out. Let them have some energy already to start travelling.
+  - At any hour, check the number of EU ordered. If less than the required rate, decrease the price, or else increase the price.
+  - So, one of the inputs of the purchase price function is the quantity of EU requested.
+  - So, at the first hour, 180 EU should have been sold by each market.
+
+Design
+1. List of all enrolled players identified by their account address.
+   - Initial balance: 50000 pearls.
+   - Keep track of energy units bought every hour.
+   - 2D structure. players vs pearls spent every hour.
+
+2. Market datastore.
+   - Identifier - R-G-B or 1-2-3.
+   - Units sold till now
+   - demand for this round.
+   - last calculated price
+   - round number.
+
+
+Functions:
+ 1. execute round(round number).
+
+Game State - status of the current game - Ignore for now.
+ - Start - 
+ - Finish - 
+
+Market - Getter - Price for the last round.
