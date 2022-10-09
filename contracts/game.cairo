@@ -19,7 +19,7 @@ func units_sold_till_now(market_id: felt) -> (res: felt) {
 }
 
 @storage_var
-func last_calculated_price(market_id: felt) -> (res: felt) {
+func last_calculated_price(market_id: felt, round_num: felt) -> (res: felt) {
 }
 
 @storage_var
@@ -35,13 +35,16 @@ func pearls_balance(user_id: felt, round: felt) -> (res: felt) {
 func energy_units_bought(user_id: felt, round: felt) -> (res: felt) {
 }
 
+// To keep track of the current round number/hour.
+@storage_var
+func latest_round() -> (res: felt) {
+}
 
 //@constructor
 //func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 //} () {
 //    return();
 //}
-
 
 // <--- externals --->
 
@@ -57,10 +60,10 @@ func set_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 
 @external
 func set_last_calculated_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, units: felt
+    market_id: felt, round_num: felt, units: felt
 ) {
     assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-    last_calculated_price.write(market_id, units);
+    last_calculated_price.write(market_id, round_num, units);
     return();
 }
 
@@ -91,6 +94,14 @@ func set_pearls_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_ch
     return ();
 }
 
+@external
+func set_latest_round{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    round_num: felt
+) {
+    latest_round.write(round_num);
+    return();
+}
+
 // == Getters ==
 // <--- views --->
 @view
@@ -110,10 +121,10 @@ func get_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 
 @view
 func get_last_calculated_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-   market_id: felt) -> (res: felt) {
+   market_id: felt, round_num: felt) -> (res: felt) {
 
    assert_lt(market_id, Game.NUMBER_OF_PLAYERS);
-   let units = last_calculated_price.read(market_id);
+   let units = last_calculated_price.read(market_id, round_num);
    return units;
 }
 
@@ -147,6 +158,13 @@ func get_energy_units_bought{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
     energy_units_bought.write(user_id, round, 2);
     let (eu) = energy_units_bought.read(user_id, round);
     return(res=eu,);
+}
+
+@external
+func get_latest_round{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+) -> (res: felt) {
+    let (round_num) = latest_round.read();
+    return(res=round_num);
 }
 
 @view

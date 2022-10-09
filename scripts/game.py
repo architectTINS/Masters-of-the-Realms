@@ -93,8 +93,9 @@ def main():
     #initialisa_markets()
     #print(type(marketid['B']))
     #init_pearls_for_all_players()
-    set_player_choices_for_the_round(1)
+    set_player_choices_for_the_round(0)
 
+    # update round_num when you commit to a transaction.
 
 if __name__ == "__main__":
     # args = sys.argv
