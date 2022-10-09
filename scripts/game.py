@@ -12,6 +12,20 @@ network = "localhost"
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 #logging.basicConfig(level=logging.INFO, format="%(message)s")
 
+marketid = {'R':1, 'G':2, 'B': 3}
+
+choices = [
+    ['R','R','R','R','R', 'R','R','R','R','R'],
+    ['R','R','B','G','G', 'R','B','R','B','R'],
+    ['R','G','R','R','R', 'R','R','G','R','B'],
+    ['G','R','G','G','G', 'R','G','R','G','G'],
+    ['G','B','R','B','R', 'G','R','G','G','G'],
+    ['G','G','G','G','G', 'G','G','G','B','G'],
+    ['B','B','B','B','B', 'R','B','B','B','B'],
+    ['B','G','G','R','B', 'B','B','G','B','B'],
+    ['B','R','B','B','G', 'R','B','G','R','B'],
+]
+
 def market_get_set_id():
     """
     Set and Get market id.
@@ -28,6 +42,8 @@ def get_number_of_players():
     num_players = call_or_invoke("game", "call", "get_number_of_players", None, network)
     # logging.info(f'Number of players: {num_players}')
     return int(num_players)
+
+num_players = get_number_of_players()
 
 def get_number_of_markets():
     """
@@ -49,9 +65,27 @@ def initialise_players():
     for i in range(num):
         wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "get_energy_units_bought")
 
+def set_player_choices_for_the_round(round_num):
+
+    # outputs: [1, 1, 1, 2, 2, 2, 3, 3, 3] for round 0
+    #for i in range(num_players):
+    #    print(marketid[choices[i][round_num]])
+    choices_list = [marketid[choices[i][round_num]] for i in range(num_players)]
+    choices_list.insert(0,num_players)
+    print(choices_list)
+
+    #print(type(choices_list))
+    #choices_str = ','.join(str(e) for e in choices_list)
+    #print(f'{type(choices_str)} : {choices_str}')
+    b = [1, 2]
+    price = call_or_invoke("game", "call", "array_input", choices_list, network); print(price)
+
 def main():
     #create_keys()
-    initialisa_markets()
+    #initialisa_markets()
+    #print(type(marketid['B']))
+    set_player_choices_for_the_round(0)
+
 
 if __name__ == "__main__":
     # args = sys.argv

@@ -47,9 +47,8 @@ Design
    - last calculated price
    - round number.
 
-
 Functions:
- 1. execute round(round number).
+  1. execute round(round number).
 
 Game State - status of the current game - Ignore for now.
  - Start - 

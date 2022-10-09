@@ -8,10 +8,10 @@ from starkware.cairo.common.registers import get_fp_and_pc
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
-struct EnergyUnitsSpent {
-    round: felt,
-    energy_units: felt,
-}
+//struct EnergyUnitsSpent {
+//    round: felt,
+//    energy_units: felt,
+//}
 
 // <--- Storage variables --->
 @storage_var
@@ -23,17 +23,12 @@ func last_calculated_price(market_id: felt) -> (res: felt) {
 }
 
 @storage_var
-func market_id() -> (res: felt) {
-}
-
-@storage_var
 func pearls_balance(user_id: felt, round: felt) -> (res: felt) {
 }
 
 @storage_var
 func energy_units_bought(user_id: felt, round: felt) -> (res: felt) {
 }
-
 
 
 //@constructor
@@ -64,14 +59,6 @@ func set_last_calculated_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
 
     last_calculated_price.write(market_id, units);
     return();
-}
-
-@external
-func set_id{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    marketid_to_set: felt
-) {
-    market_id.write(marketid_to_set);
-    return ();
 }
 
 @external
@@ -109,13 +96,6 @@ func get_last_calculated_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
 }
 
 @view
-func get_id{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-) -> (out_id: felt) {
-    let (res) = market_id.read();
-    return (out_id=res);
-}
-
-@view
 func get_number_of_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ) -> (num_players: felt) {
     return(Game.NUMBER_OF_PLAYERS,);
@@ -150,4 +130,14 @@ func test_array{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 
     local num: (felt, felt, felt) = (pearls,2,3);
     return(res_len=3, res=&num);
+}
+
+@external
+func array_input{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    in_len:felt, in: felt*
+) -> (res: felt) {
+
+    let res = in[7];
+
+    return (res=res);
 }
