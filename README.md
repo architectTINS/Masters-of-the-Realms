@@ -10,4 +10,6 @@ Adventurers, come choose your path to be a mariner, a ship-builder or a merchant
 
 
 
-Module 1: Dynamic markets based on VRGDA (Variable Rate Gradual Dutch Auction) model
+| Module | Description |
+| -------| ----------- |
+|   # 1  | Dynamic markets based on VRGDA (Variable Rate Gradual Dutch Auction) model |
