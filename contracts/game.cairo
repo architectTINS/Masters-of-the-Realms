@@ -159,7 +159,7 @@ func init_pearls_for_all_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
         local balance = Game.INITIAL_PEARL_BALANCE;
 
         pearls_balance.write(player_id, round, balance);
-        return (res = 0);
+        return ();
     } else {
         local player_id = num - 1;
         local remaining_players = player_id;
@@ -170,11 +170,6 @@ func init_pearls_for_all_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
 
         init_pearls_for_all_players(remaining_players);
     }
-}
 
-@view
-func test_get_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-) -> (res: felt){
-    let (res) = pearls_balance.read(2, 0);
-    return (res=res);
+    return ();
 }

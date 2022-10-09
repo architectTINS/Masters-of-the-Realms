@@ -49,20 +49,20 @@ def get_number_of_markets():
     """
     Get number of markets.
     """
-    num_markets = call_or_invoke("game", "call", "get_number_of_markets", None, network)
-    # logging.info(f'Number of markets: {num_markets}')
-    return int(num_markets)
+    num = call_or_invoke("game", "call", "get_number_of_markets", None, network)
+    # logging.info(f'Number of markets: {num}')
+    return int(num)
+
+num_markets = get_number_of_markets()
 
 def initialisa_markets():
-    num = get_number_of_markets()
-    for i in range(num):
+    for i in range(num_markets):
         wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_units_sold", [i, 5+i])
     wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_last_calculated_price", [1, 10])
     price = call_or_invoke("game", "call", "get_last_calculated_price", [1], network); print(price)
 
 def initialise_players():
-    num = get_number_of_players()
-    for i in range(num):
+    for i in range(num_players):
         wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "get_energy_units_bought")
 
 def set_player_choices_for_the_round(round_num):
@@ -84,20 +84,9 @@ def set_player_choices_for_the_round(round_num):
     price = call_or_invoke("game", "call", "set_choices_for_the_round", inputs, network); print(price)
 
 def init_pearls_for_all_players():
-    out = wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "init_pearls_for_all_players", [num_players])
-    print(f"sent: {out}")
-    out = call_or_invoke("game", "call", "get_pearls_balance", [3,0], network)
-    print(f"get 3: {out}")
-    out = call_or_invoke("game", "call", "get_pearls_balance", [2,0], network)
-    print(f"get 2: {out}")
-    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_pearls_balance", [2, 0, 51000])
-    out = call_or_invoke("game", "call", "get_pearls_balance", [2,0], network)
-    print(f"get 2: {out}")
-    out = call_or_invoke("game", "call", "test_get_balance", None, network)
-    print(f"test: {out}")
-    #out = call_or_invoke("game", "call", "init_pearls_for_all_players", [num_players], network)
-    #print(out)
-
+    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "init_pearls_for_all_players", [num_players])
+    #out = call_or_invoke("game", "call", "get_pearls_balance", [3,0], network)
+    #print(f"get 3: {out}")
 
 def main():
     #create_keys()
