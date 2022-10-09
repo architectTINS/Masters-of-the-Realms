@@ -77,14 +77,32 @@ def set_player_choices_for_the_round(round_num):
     #print(type(choices_list))
     #choices_str = ','.join(str(e) for e in choices_list)
     #print(f'{type(choices_str)} : {choices_str}')
-    b = [1, 2]
-    price = call_or_invoke("game", "call", "array_input", choices_list, network); print(price)
+
+    inputs = choices_list
+    inputs.insert(0, round_num)
+    print(inputs)
+    price = call_or_invoke("game", "call", "set_choices_for_the_round", inputs, network); print(price)
+
+def init_pearls_for_all_players():
+    out = call_or_invoke("game", "call", "init_pearls_for_all_players", [num_players], network)
+    print(out)
+    out = call_or_invoke("game", "call", "get_pearls_balance", [3,0], network)
+    print(out)
+    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_pearls_balance", [2, 0, 50000])
+    out = call_or_invoke("game", "call", "get_pearls_balance", [3,0], network)
+    print(out)
+    out = call_or_invoke("game", "call", "test_get_balance", None, network)
+    print(out)
+    #out = call_or_invoke("game", "call", "init_pearls_for_all_players", [num_players], network)
+    #print(out)
+
 
 def main():
     #create_keys()
     #initialisa_markets()
     #print(type(marketid['B']))
-    set_player_choices_for_the_round(0)
+    #set_player_choices_for_the_round(1)
+    init_pearls_for_all_players()
 
 
 if __name__ == "__main__":

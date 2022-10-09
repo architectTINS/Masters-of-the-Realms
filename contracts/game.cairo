@@ -23,6 +23,11 @@ func last_calculated_price(market_id: felt) -> (res: felt) {
 }
 
 @storage_var
+func market_demand(market_id: felt, round_num: felt) -> (res: felt) {
+}
+
+
+@storage_var
 func pearls_balance(user_id: felt, round: felt) -> (res: felt) {
 }
 
@@ -101,7 +106,7 @@ func get_number_of_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range
     return(Game.NUMBER_OF_PLAYERS,);
 }
 
-@external
+@view
 func get_pearls_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     user_id: felt, round: felt
 ) -> (res: felt) {
@@ -133,11 +138,49 @@ func test_array{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 }
 
 @external
-func array_input{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    in_len:felt, in: felt*
+func set_choices_for_the_round{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    round_num: felt, in_choices_len: felt, in_choices: felt*
 ) -> (res: felt) {
 
-    let res = in[7];
+    let res = in_choices[7];
+    return (res=res);
+}
 
+@external
+func init_pearls_for_all_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    num: felt
+) -> (res: felt) {
+
+    alloc_locals;
+
+    if (num == 0) {
+        local player_id = num;
+        local round = 0;
+        local balance = Game.INITIAL_PEARL_BALANCE;
+
+        pearls_balance.write(player_id, round, balance);
+        return (res = 0);
+    } else {
+        local player_id = num - 1;
+        local remaining_players = player_id;
+        local round = 0;
+        local balance = Game.INITIAL_PEARL_BALANCE;
+
+        pearls_balance.write(player_id, round, balance);
+
+        init_pearls_for_all_players(remaining_players);
+    }
+
+    pearls_balance.write(3, 0, 51000);
+    let (res) = get_pearls_balance(2, 0);
+
+    return(res=res);
+}
+
+@view
+func test_get_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+) -> (res: felt){
+
+    let (res) = pearls_balance.read(2, 0);
     return (res=res);
 }
