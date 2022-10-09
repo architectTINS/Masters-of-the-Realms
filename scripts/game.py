@@ -6,8 +6,7 @@ import logging
 
 from library import wrapped_send
 from nile.core.call_or_invoke import call_or_invoke
-from ecdsa import SigningKey, SECP128r1
-from ecdsa.util import PRNG
+
 
 network = "localhost"
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
@@ -38,53 +37,17 @@ def get_number_of_markets():
     # logging.info(f'Number of markets: {num_markets}')
     return int(num_markets)
 
-
-def create_pk(seed):
-    rng = PRNG(seed)
-    sk = SigningKey.generate(entropy=rng)
-    sk_string = sk.to_string()
-    sk_hex = sk_string.hex();      # print(f'Hex: {sk_hex}')
-    sk_int = int('0x'+sk_hex, 16); # print(sk_int)
-    return sk_int
-
-def create_keys_for_players():
-    num = get_number_of_players()
-    player_keys = []
-    for i in range(num):
-        seed = "player" + str(i)
-        pk = create_pk(bytes(seed.encode('utf-8')))
-        # print(f"{i} : {pk}")
-        player_keys.append(pk)
-    return player_keys
-
-def create_keys_for_markets():
-    num = get_number_of_markets()
-    market_keys = []
-    for i in range(num):
-        seed = "market" + str(i)
-        pk = create_pk(bytes(seed.encode('utf-8')))
-        market_keys.append(pk)
-    return market_keys
-
-def create_keys():
-    player_keys = create_keys_for_players()
-    market_keys = create_keys_for_markets()
-    for i in range(len(player_keys)):
-        logging.info(f'{i} : {player_keys[i]}')
-    for i in range(len(market_keys)):
-        logging.info(f'{i} : {market_keys[i]}')
-
 def initialisa_markets():
-    #num = get_number_of_markets()
-    #for i in range(num):
-    #    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_units_sold", [i, 5+i])
+    num = get_number_of_markets()
+    for i in range(num):
+        wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_units_sold", [i, 5+i])
     wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_last_calculated_price", [1, 10])
     price = call_or_invoke("game", "call", "get_last_calculated_price", [1], network); print(price)
 
 def initialise_players():
     num = get_number_of_players()
     for i in range(num):
-        wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "get_energy_units_remaining")
+        wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "get_energy_units_bought")
 
 def main():
     #create_keys()
