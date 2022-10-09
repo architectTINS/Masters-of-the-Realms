@@ -51,7 +51,6 @@ func set_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
     market_id: felt, units: felt
 ) {
     assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-
     units_sold_till_now.write(market_id, units);
     return();
 }
@@ -61,9 +60,27 @@ func set_last_calculated_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
     market_id: felt, units: felt
 ) {
     assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-
     last_calculated_price.write(market_id, units);
     return();
+}
+
+@external
+func set_market_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    market_id: felt, round_num: felt, new_demand: felt
+) {
+    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
+    market_demand.write(market_id, round_num, new_demand);
+    return ();
+}
+
+@external
+func inc_market_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    market_id: felt, round_num: felt
+) {
+    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
+    let (demand) = market_demand.read(market_id, round_num);
+    set_market_demand(market_id, round_num, demand+1);
+    return ();
 }
 
 @external
@@ -107,6 +124,15 @@ func get_number_of_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range
 }
 
 @view
+func get_market_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    market_id: felt, round_num: felt
+) -> (res: felt){
+    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
+    let (demand) = market_demand.read(market_id, round_num);
+    return (res=demand);
+}
+
+@view
 func get_pearls_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     user_id: felt, round: felt
 ) -> (res: felt) {
@@ -140,10 +166,24 @@ func test_array{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 @external
 func set_choices_for_the_round{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     round_num: felt, in_choices_len: felt, in_choices: felt*
-) -> (res: felt) {
+) -> () {
 
-    let res = in_choices[7];
-    return (res=res);
+    alloc_locals;
+
+    assert_lt(round_num, Game.NUMBER_OF_ROUNDS);
+
+    if(in_choices_len == 0) {
+        return();
+    } else {
+        set_choices_for_the_round(round_num, in_choices_len-1, in_choices);
+    }
+
+    local market_id = in_choices[in_choices_len-1];
+    inc_market_demand(market_id, round_num);
+
+    //let res = in_choices[7];
+    //return (res=res);
+    return ();
 }
 
 @external
@@ -153,23 +193,17 @@ func init_pearls_for_all_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
 
     alloc_locals;
 
-    if (num == 0) {
-        local player_id = num;
-        local round = 0;
-        local balance = Game.INITIAL_PEARL_BALANCE;
+    let round = 0;
+    let balance = Game.INITIAL_PEARL_BALANCE;
 
-        pearls_balance.write(player_id, round, balance);
+    if (num == 0) {
         return ();
     } else {
-        local player_id = num - 1;
-        local remaining_players = player_id;
-        local round = 0;
-        local balance = Game.INITIAL_PEARL_BALANCE;
-
-        pearls_balance.write(player_id, round, balance);
-
-        init_pearls_for_all_players(remaining_players);
+        init_pearls_for_all_players(num-1);
     }
+
+    local player_id = num - 1;
+    pearls_balance.write(player_id, round, balance);
 
     return ();
 }

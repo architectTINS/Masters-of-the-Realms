@@ -12,7 +12,7 @@ network = "localhost"
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 #logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-marketid = {'R':1, 'G':2, 'B': 3}
+marketid = {'R':0, 'G':1, 'B': 2}
 
 choices = [
     ['R','R','R','R','R', 'R','R','R','R','R'],
@@ -67,7 +67,7 @@ def initialise_players():
 
 def set_player_choices_for_the_round(round_num):
 
-    # outputs: [1, 1, 1, 2, 2, 2, 3, 3, 3] for round 0
+    # outputs: [0, 0, 0, 1, 1, 1, 2, 2, 2] for round 0
     #for i in range(num_players):
     #    print(marketid[choices[i][round_num]])
     choices_list = [marketid[choices[i][round_num]] for i in range(num_players)]
@@ -81,19 +81,19 @@ def set_player_choices_for_the_round(round_num):
     inputs = choices_list
     inputs.insert(0, round_num)
     print(inputs)
-    price = call_or_invoke("game", "call", "set_choices_for_the_round", inputs, network); print(price)
+    price = wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_choices_for_the_round", inputs)
 
 def init_pearls_for_all_players():
     wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "init_pearls_for_all_players", [num_players])
-    #out = call_or_invoke("game", "call", "get_pearls_balance", [3,0], network)
+    #out = call_or_invoke("game", "call", "get_pearls_balance", [8,0], network)
     #print(f"get 3: {out}")
 
 def main():
     #create_keys()
     #initialisa_markets()
     #print(type(marketid['B']))
-    #set_player_choices_for_the_round(1)
-    init_pearls_for_all_players()
+    #init_pearls_for_all_players()
+    set_player_choices_for_the_round(1)
 
 
 if __name__ == "__main__":
