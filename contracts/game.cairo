@@ -1,12 +1,15 @@
 %lang starknet
 
 from contracts.constants import Game
+from contracts.vrgda import vrgda_price
 from starkware.cairo.common.math import assert_lt
-//from starkware.cairo.common.uint256 import Uint256
+from starkware.cairo.common.uint256 import Uint256
 //from libext.math import felt_to_uint256
 from starkware.cairo.common.registers import get_fp_and_pc
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
+
+from libext.math64x61 import Math64x61_add
 
 //struct EnergyUnitsSpent {
 //    round: felt,
@@ -15,12 +18,17 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 
 // <--- Storage variables --->
 @storage_var
-func units_sold_till_now(market_id: felt) -> (res: felt) {
+func energy_units_sold(market_id: felt, round_num: felt) -> (res: felt) {
 }
 
 @storage_var
-func last_calculated_price(market_id: felt, round_num: felt) -> (res: felt) {
+func purchase_price(market_id: felt, round_num: felt) -> (res: felt) {
 }
+
+@storage_var
+func initial_purchase_price(market_id: felt) -> (res: felt) {
+}
+
 
 @storage_var
 func market_demand(market_id: felt, round_num: felt) -> (res: felt) {
@@ -35,7 +43,7 @@ func pearls_balance(user_id: felt, round: felt) -> (res: felt) {
 func energy_units_bought(user_id: felt, round: felt) -> (res: felt) {
 }
 
-// To keep track of the current round number/hour.
+// To keep track of the last completed round number/hour.
 @storage_var
 func latest_round() -> (res: felt) {
 }
@@ -51,19 +59,19 @@ func latest_round() -> (res: felt) {
 // Energy unit sold by the market till now.
 @external
 func set_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, units: felt
+    market_id: felt, round_num: felt, units: felt
 ) {
     assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-    units_sold_till_now.write(market_id, units);
+    energy_units_sold.write(market_id, round_num, units);
     return();
 }
 
 @external
-func set_last_calculated_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func set_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     market_id: felt, round_num: felt, units: felt
 ) {
     assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-    last_calculated_price.write(market_id, round_num, units);
+    purchase_price.write(market_id, round_num, units);
     return();
 }
 
@@ -82,7 +90,7 @@ func inc_market_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
 ) {
     assert_lt(market_id, Game.NUMBER_OF_MARKETS);
     let (demand) = market_demand.read(market_id, round_num);
-    set_market_demand(market_id, round_num, demand+1);
+    set_market_demand(market_id, round_num, demand + 20);
     return ();
 }
 
@@ -112,19 +120,28 @@ func get_number_of_markets{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range
 
 @view
 func get_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt) -> (res: felt) {
+    market_id: felt, round_num: felt) -> (res: felt) {
 
     assert_lt(market_id, Game.NUMBER_OF_PLAYERS);
-    let (units) = units_sold_till_now.read(market_id);
+    let (units) = energy_units_sold.read(market_id, round_num);
     return(res=units,);
 }
 
 @view
-func get_last_calculated_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func get_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
    market_id: felt, round_num: felt) -> (res: felt) {
 
    assert_lt(market_id, Game.NUMBER_OF_PLAYERS);
-   let units = last_calculated_price.read(market_id, round_num);
+   let units = purchase_price.read(market_id, round_num);
+   return units;
+}
+
+@view
+func get_initial_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+   market_id: felt) -> (res: felt) {
+
+   assert_lt(market_id, Game.NUMBER_OF_PLAYERS);
+   let units = initial_purchase_price.read(market_id);
    return units;
 }
 
@@ -224,4 +241,78 @@ func init_pearls_for_all_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
     pearls_balance.write(player_id, round, balance);
 
     return ();
+}
+
+@external
+func init_purchase_price_for_all_markets{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    num: felt
+) -> () {
+    alloc_locals;
+
+    let round = 0;
+    let price = Game.INITIAL_ENERGY_UNIT_PRICE;
+
+    if(num == 0) {
+        return ();
+    } else {
+        init_purchase_price_for_all_markets(num-1);
+    }
+
+    local market_id = num - 1;
+    purchase_price.write(market_id, round, price);
+    initial_purchase_price.write(market_id, price);
+
+    return();
+}
+
+// Calculate the energy units sold in a market till round_num.
+@view
+func calculate_cumulative_units_purchased{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    market_id: felt, round_num: felt
+) -> (res: felt){
+
+    if (round_num == -1) {
+        return (res=0);
+    }
+
+    if (round_num == 0) {
+        let (units) = energy_units_sold.read(market_id,0);
+        return(res=units);
+    } else {
+        let (units_prev) = calculate_cumulative_units_purchased(market_id, round_num-1);
+    }
+
+    let (units_cur) = energy_units_sold.read(market_id, round_num);
+    let units = units_prev + units_cur;
+
+    return (res=units);
+}
+
+@view
+func calculate_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    market_id: felt, round_num: felt
+) -> (res: Uint256) {
+
+    alloc_locals;
+
+    let (price) = initial_purchase_price.read(market_id);
+
+    // Assigning in a new variable to fix this error.
+    // contracts/game.cairo:299:29: Reference 'p0' was revoked. - let (res) = vrgda_price(p0, k100, t, n, r);
+    let p0 = price;
+
+    let k100 = Game.DECAY_PERCENTAGE;
+    // Note: round 0 occurs after an hour after the start of the game. so, round_num = 0 ==> t = 1.
+    let t = round_num + 1;
+
+    let (price_till_now) = calculate_cumulative_units_purchased(market_id, round_num-1);
+
+    let (demand) = market_demand.read(market_id, round_num);
+    let n = price_till_now + demand;
+
+    let r = Game.UNITS_SCHEDULE;
+
+    let (res) = vrgda_price(p0, k100, t, n, r);
+
+    return(res=res);
 }
