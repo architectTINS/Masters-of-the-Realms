@@ -2,20 +2,15 @@
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.uint256 import Uint256
-from libext.math64x61 import (
-    Math64x61_toUint256,
-    Math64x61_add,
-    Math64x61_sub,
-    Math64x61_mul,
-    Math64x61_div,
-    Math64x61_pow,
-    Math64x61_fromFelt,
-    Math64x61_ONE
-
-)
-from contracts.constants import Game
 from libext.math import felt_to_uint256
+from libext.math64x61 import (
+    Math64x61_fromFelt, Math64x61_toUint256,
+    Math64x61_add, Math64x61_sub, Math64x61_mul, Math64x61_div,
+    Math64x61_pow,
+    Math64x61_ONE
+)
 from openzeppelin.security.safemath.library import SafeUint256
+from contracts.constants import Game
 
 // VRGDA Formula:
 // vrgda_n(t) = p0 * (1-k)^(t-s_n)

@@ -1,4 +1,5 @@
 // Declare this file as a StarkNet contract.
+// This file is just a test file. Has got nothing to do with DynamicMarkets.
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin

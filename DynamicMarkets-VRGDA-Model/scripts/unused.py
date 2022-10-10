@@ -23,7 +23,7 @@ def create_keys_for_players():
     return player_keys
 
 def create_keys_for_markets():
-    num = get_number_of_markets()
+    num = get_number_of_food_options()
     market_keys = []
     for i in range(num):
         seed = "market" + str(i)

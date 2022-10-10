@@ -6,36 +6,29 @@ from starkware.cairo.common.math import assert_lt
 from starkware.cairo.common.uint256 import Uint256
 //from libext.math import felt_to_uint256
 from starkware.cairo.common.registers import get_fp_and_pc
-
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-
 from libext.math64x61 import (
-    Math64x61_add, Math64x61_sub,
+    Math64x61_add,      Math64x61_sub,
     Math64x61_fromFelt, Math64x61_toFelt,
     Math64x61_fromUint256
 )
 
-//struct EnergyUnitsSpent {
-//    round: felt,
-//    energy_units: felt,
-//}
-
 // <--- Storage variables --->
 @storage_var
-func energy_units_sold(market_id: felt, round_num: felt) -> (res: felt) {
+func food_sold(option_id: felt, round_num: felt) -> (res: felt) {
 }
 
 @storage_var
-func purchase_price(market_id: felt, round_num: felt) -> (res: felt) {
+func food_price(option_id: felt, round_num: felt) -> (res: felt) {
 }
 
 @storage_var
-func initial_purchase_price(market_id: felt) -> (res: felt) {
+func initial_food_price(option_id: felt) -> (res: felt) {
 }
 
 
 @storage_var
-func market_demand(market_id: felt, round_num: felt) -> (res: felt) {
+func market_demand(option_id: felt, round_num: felt) -> (res: felt) {
 }
 
 
@@ -43,71 +36,58 @@ func market_demand(market_id: felt, round_num: felt) -> (res: felt) {
 func pearls_balance(user_id: felt, round: felt) -> (res: felt) {
 }
 
-// 09-10-2022: Unused for now.
-@storage_var
-func energy_units_bought(user_id: felt, round: felt) -> (res: felt) {
-}
-
 // To keep track of the last completed round number/hour.
 @storage_var
 func latest_round() -> (res: felt) {
 }
 
-
-
-//@constructor
-//func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
-//} () {
-//    return();
-//}
-
 // <--- externals --->
 
-// Energy unit sold by the market till now.
+// Each food option sold till now.
 @external
-func set_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, round_num: felt, units: felt
+func set_food_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    option_id: felt, round_num: felt, units: felt
 ) {
-    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-    energy_units_sold.write(market_id, round_num, units);
+    assert_lt(option_id, Game.NUMBER_OF_FOOD_OPTIONS);
+    food_sold.write(option_id, round_num, units);
     return();
 }
 
 @external
-func inc_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, round_num: felt
+func inc_food_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    option_id: felt, round_num: felt
 ) {
-    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-    let (prev_units) = energy_units_sold.read(market_id, round_num);
-    energy_units_sold.write(market_id, round_num, prev_units + Game.ENERGY_UNIT_BLOCKS);
+    assert_lt(option_id, Game.NUMBER_OF_FOOD_OPTIONS);
+    let (prev_units) = food_sold.read(option_id, round_num);
+    food_sold.write(option_id, round_num, prev_units + 1);
     return();
 }
 
 @external
-func set_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, round_num: felt, units: felt
+func set_food_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    option_id: felt, round_num: felt, units: felt
 ) {
-    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-    purchase_price.write(market_id, round_num, units);
+    assert_lt(option_id, Game.NUMBER_OF_FOOD_OPTIONS);
+    food_price.write(option_id, round_num, units);
     return();
 }
 
 @external
 func set_market_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, round_num: felt, new_demand: felt
+    option_id: felt, round_num: felt, new_demand: felt
 ) {
-    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-    market_demand.write(market_id, round_num, new_demand);
+    assert_lt(option_id, Game.NUMBER_OF_FOOD_OPTIONS);
+    market_demand.write(option_id, round_num, new_demand);
     return ();
 }
 
 @external
 func inc_market_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, round_num: felt
+    option_id: felt, round_num: felt
 ) {
-    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-    let (demand) = market_demand.read(market_id, round_num);
-    set_market_demand(market_id, round_num, demand + Game.ENERGY_UNIT_BLOCKS);
+    assert_lt(option_id, Game.NUMBER_OF_FOOD_OPTIONS);
+    let (demand) = market_demand.read(option_id, round_num);
+    set_market_demand(option_id, round_num, demand + 1);
     return ();
 }
 
@@ -130,35 +110,35 @@ func set_latest_round{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_chec
 // == Getters ==
 // <--- views --->
 @view
-func get_number_of_markets{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func get_number_of_food_options{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ) -> (num_players: felt) {
-    return(Game.NUMBER_OF_MARKETS,);
+    return(Game.NUMBER_OF_FOOD_OPTIONS,);
 }
 
 @view
-func get_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, round_num: felt) -> (res: felt) {
+func get_food_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    option_id: felt, round_num: felt) -> (res: felt) {
 
-    assert_lt(market_id, Game.NUMBER_OF_PLAYERS);
-    let (units) = energy_units_sold.read(market_id, round_num);
+    assert_lt(option_id, Game.NUMBER_OF_PLAYERS);
+    let (units) = food_sold.read(option_id, round_num);
     return(res=units,);
 }
 
 @view
-func get_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-   market_id: felt, round_num: felt) -> (res: felt) {
+func get_food_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+   option_id: felt, round_num: felt) -> (res: felt) {
 
-   assert_lt(market_id, Game.NUMBER_OF_PLAYERS);
-   let units = purchase_price.read(market_id, round_num);
+   assert_lt(option_id, Game.NUMBER_OF_PLAYERS);
+   let units = food_price.read(option_id, round_num);
    return units;
 }
 
 @view
-func get_initial_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-   market_id: felt) -> (res: felt) {
+func get_initial_food_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+   option_id: felt) -> (res: felt) {
 
-   assert_lt(market_id, Game.NUMBER_OF_PLAYERS);
-   let units = initial_purchase_price.read(market_id);
+   assert_lt(option_id, Game.NUMBER_OF_PLAYERS);
+   let units = initial_food_price.read(option_id);
    return units;
 }
 
@@ -170,10 +150,10 @@ func get_number_of_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range
 
 @view
 func get_market_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, round_num: felt
+    option_id: felt, round_num: felt
 ) -> (res: felt){
-    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
-    let (demand) = market_demand.read(market_id, round_num);
+    assert_lt(option_id, Game.NUMBER_OF_FOOD_OPTIONS);
+    let (demand) = market_demand.read(option_id, round_num);
     return (res=demand);
 }
 
@@ -183,15 +163,6 @@ func get_pearls_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_ch
 ) -> (res: felt) {
     let (pearls) = pearls_balance.read(user_id, round);
     return (res=pearls);
-}
-
-@view
-func get_energy_units_bought{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    user_id: felt, round: felt
-) -> (res: felt) {
-    energy_units_bought.write(user_id, round, 2);
-    let (eu) = energy_units_bought.read(user_id, round);
-    return(res=eu,);
 }
 
 @external
@@ -230,8 +201,8 @@ func set_choices_for_the_round{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
         set_choices_for_the_round(round_num, in_choices_len-1, in_choices);
     }
 
-    local market_id = in_choices[in_choices_len-1];
-    inc_market_demand(market_id, round_num);
+    local option_id = in_choices[in_choices_len-1];
+    inc_market_demand(option_id, round_num);
 
     //let res = in_choices[7];
     //return (res=res);
@@ -261,23 +232,23 @@ func init_pearls_for_all_players{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
 }
 
 @external
-func init_purchase_price_for_all_markets{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func init_food_price_for_all_markets{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     num: felt
 ) -> () {
     alloc_locals;
 
     let round = 0;
-    let price = Game.INITIAL_ENERGY_UNIT_PRICE;
+    let price = Game.INITIAL_FOOD_PRICE;
 
     if(num == 0) {
         return ();
     } else {
-        init_purchase_price_for_all_markets(num-1);
+        init_food_price_for_all_markets(num-1);
     }
 
-    local market_id = num - 1;
-    purchase_price.write(market_id, round, price);
-    initial_purchase_price.write(market_id, price);
+    local option_id = num - 1;
+    food_price.write(option_id, round, price);
+    initial_food_price.write(option_id, price);
 
     return();
 }
@@ -285,7 +256,7 @@ func init_purchase_price_for_all_markets{syscall_ptr: felt*, pedersen_ptr: HashB
 // Calculate the energy units sold in a market till round_num.
 @view
 func calculate_cumulative_units_purchased{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, round_num: felt
+    option_id: felt, round_num: felt
 ) -> (res: felt){
 
     if (round_num == -1) {
@@ -293,26 +264,26 @@ func calculate_cumulative_units_purchased{syscall_ptr: felt*, pedersen_ptr: Hash
     }
 
     if (round_num == 0) {
-        let (units) = energy_units_sold.read(market_id,0);
+        let (units) = food_sold.read(option_id,0);
         return(res=units);
     } else {
-        let (units_prev) = calculate_cumulative_units_purchased(market_id, round_num-1);
+        let (units_prev) = calculate_cumulative_units_purchased(option_id, round_num-1);
     }
 
-    let (units_cur) = energy_units_sold.read(market_id, round_num);
+    let (units_cur) = food_sold.read(option_id, round_num);
     let units = units_prev + units_cur;
 
     return (res=units);
 }
 
 @view
-func calculate_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    market_id: felt, round_num: felt
+func calculate_food_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    option_id: felt, round_num: felt
 ) -> (res: Uint256) {
 
     alloc_locals;
 
-    let (price) = initial_purchase_price.read(market_id);
+    let (price) = initial_food_price.read(option_id);
 
     // Assigning in a new variable to fix this error.
     // contracts/game.cairo:299:29: Reference 'p0' was revoked. - let (res) = vrgda_price(p0, k100, t, n, r);
@@ -322,10 +293,10 @@ func calculate_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ra
     // Note: round 0 occurs after an hour after the start of the game. so, round_num = 0 ==> t = 1.
     let t = round_num + 1;
 
-    let (price_till_now) = calculate_cumulative_units_purchased(market_id, round_num-1);
+    let (units_till_now) = calculate_cumulative_units_purchased(option_id, round_num-1);
 
-    let (demand) = market_demand.read(market_id, round_num);
-    let n = price_till_now + demand;
+    let (demand) = market_demand.read(option_id, round_num);
+    let n = units_till_now + demand;
 
     let r = Game.UNITS_SCHEDULE;
 
@@ -349,10 +320,10 @@ func commit_auction{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 
     assert_lt(round_num, Game.NUMBER_OF_ROUNDS);
 
-    local market_id = in_choices[in_choices_len-1];
+    local option_id = in_choices[in_choices_len-1];
     local user_id = in_choices_len-1;
     
-    let (price) = calculate_purchase_price(market_id,round_num);
+    let (price) = calculate_food_price(option_id,round_num);
 
     if (round_num == 0) {
         let (previous_balance) = pearls_balance.read(user_id, 0);
@@ -369,10 +340,10 @@ func commit_auction{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
     pearls_balance.write(user_id, round_num, new_balance);
 
     // Update Units sold in this round.
-    inc_units_sold(market_id, round_num);
+    inc_food_sold(option_id, round_num);
 
     // Update purchase price for the market for this round.
-    purchase_price.write(market_id, round_num, price.low);
+    food_price.write(option_id, round_num, price.low);
 
 
     // keep track of latest round.

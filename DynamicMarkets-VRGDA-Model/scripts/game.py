@@ -45,25 +45,25 @@ def get_number_of_players():
 
 num_players = get_number_of_players()
 
-def get_number_of_markets():
+def get_number_of_food_options():
     """
     Get number of markets.
     """
-    num = call_or_invoke("game", "call", "get_number_of_markets", None, network)
+    num = call_or_invoke("game", "call", "get_number_of_food_options", None, network)
     # logging.info(f'Number of markets: {num}')
     return int(num)
 
-num_markets = get_number_of_markets()
+num_markets = get_number_of_food_options()
 
 def initialise_markets(): # ignore this function for now.
     for i in range(num_markets):
-        wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_units_sold", [i, 5+i])
+        wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_food_sold", [i, 5+i])
     wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_last_calculated_price", [1, 10])
     price = call_or_invoke("game", "call", "get_last_calculated_price", [1], network); print(price)
 
 def initialise_players():
     for i in range(num_players):
-        wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "get_energy_units_bought") # more arguments needed here. will not work.
+        wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_last_calculated_price", [1, 6]) # more arguments needed here. will not work.
 
 def set_player_choices_for_the_round(round_num):
 
@@ -88,23 +88,23 @@ def init_pearls_for_all_players():
     #out = call_or_invoke("game", "call", "get_pearls_balance", [8,0], network)
     #print(f"get 3: {out}")
 
-def init_purchase_price_for_all_markets():
-    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "init_purchase_price_for_all_markets", [num_markets])
-    out = call_or_invoke("game", "call", "get_purchase_price", [0,0], network)
+def init_food_price_for_all_markets():
+    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "init_food_price_for_all_markets", [num_markets])
+    out = call_or_invoke("game", "call", "get_food_price", [0,0], network)
     print(f"get 0: {out}")
 
-def check_cumulative_units_purchased_purchase_price():
-    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_units_sold", [0, 0, 4])
-    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_units_sold", [0, 1, 5])
-    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_units_sold", [0, 2, 6])
+def check_cumulative_units_purchased_food_price():
+    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_food_sold", [0, 0, 4])
+    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_food_sold", [0, 1, 5])
+    wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_food_sold", [0, 2, 6])
     out = call_or_invoke("game", "call", "calculate_cumulative_units_purchased", [0,2], network)
     print(out)
 
-def calculate_purchase_price(round_num):
-    init_purchase_price_for_all_markets()
+def calculate_food_price(round_num):
+    init_food_price_for_all_markets()
     set_player_choices_for_the_round(round_num)
     for i in range(num_markets):
-        out = call_or_invoke("game", "call", "calculate_purchase_price", [i,0], network)
+        out = call_or_invoke("game", "call", "calculate_food_price", [i,0], network)
         print(f"purchase price for {i} : {out}")
 
 def commit_auction(round_num):
@@ -121,8 +121,8 @@ def main():
     #initialise_markets()
     #print(type(marketid['B']))
     init_pearls_for_all_players()
-    #init_purchase_price_for_all_markets()
-    calculate_purchase_price(0)
+    #init_food_price_for_all_markets()
+    calculate_food_price(0)
     commit_auction(0)
 
     # update round_num when you commit to a transaction.
