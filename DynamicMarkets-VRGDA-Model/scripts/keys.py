@@ -1,8 +1,9 @@
-# This file is a dump of the unused functions.
+# This file is a dump of the key functions which is not used in this dynamic markets game.
 # This file will not work.
 
 from ecdsa import SigningKey, SECP128r1
 from ecdsa.util import PRNG
+import logging
 
 def create_pk(seed):
     rng = PRNG(seed)
