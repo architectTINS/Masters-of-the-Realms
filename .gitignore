@@ -135,14 +135,12 @@ dmypy.json
 .vscode/
 
 # starknet - nile
-/bin
-/artifacts
-/lib64
-/share
-/pyvenv.cfg
+/DynamicMarkets-VRGDA-Model/bin
+/DynamicMarkets-VRGDA-Model/artifacts
+/DynamicMarkets-VRGDA-Model/lib64
+/DynamicMarkets-VRGDA-Model/share
+/DynamicMarkets-VRGDA-Model/pyvenv.cfg
 node.json
 *.deployments.txt
 *.accounts.json
-/src
-
-
+/DynamicMarkets-VRGDA-Model/src
