@@ -9,7 +9,11 @@ from starkware.cairo.common.registers import get_fp_and_pc
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
-from libext.math64x61 import Math64x61_add
+from libext.math64x61 import (
+    Math64x61_add, Math64x61_sub,
+    Math64x61_fromFelt, Math64x61_toFelt,
+    Math64x61_fromUint256
+)
 
 //struct EnergyUnitsSpent {
 //    round: felt,
@@ -39,6 +43,7 @@ func market_demand(market_id: felt, round_num: felt) -> (res: felt) {
 func pearls_balance(user_id: felt, round: felt) -> (res: felt) {
 }
 
+// 09-10-2022: Unused for now.
 @storage_var
 func energy_units_bought(user_id: felt, round: felt) -> (res: felt) {
 }
@@ -47,6 +52,8 @@ func energy_units_bought(user_id: felt, round: felt) -> (res: felt) {
 @storage_var
 func latest_round() -> (res: felt) {
 }
+
+
 
 //@constructor
 //func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
@@ -63,6 +70,16 @@ func set_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 ) {
     assert_lt(market_id, Game.NUMBER_OF_MARKETS);
     energy_units_sold.write(market_id, round_num, units);
+    return();
+}
+
+@external
+func inc_units_sold{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    market_id: felt, round_num: felt
+) {
+    assert_lt(market_id, Game.NUMBER_OF_MARKETS);
+    let (prev_units) = energy_units_sold.read(market_id, round_num);
+    energy_units_sold.write(market_id, round_num, prev_units + Game.ENERGY_UNIT_BLOCKS);
     return();
 }
 
@@ -90,7 +107,7 @@ func inc_market_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
 ) {
     assert_lt(market_id, Game.NUMBER_OF_MARKETS);
     let (demand) = market_demand.read(market_id, round_num);
-    set_market_demand(market_id, round_num, demand + 20);
+    set_market_demand(market_id, round_num, demand + Game.ENERGY_UNIT_BLOCKS);
     return ();
 }
 
@@ -315,4 +332,51 @@ func calculate_purchase_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ra
     let (res) = vrgda_price(p0, k100, t, n, r);
 
     return(res=res);
+}
+
+// Inputs:
+//   1. Round number
+//   2. Choices for each player i.e. market ids of the markets they are going to buy Energy units from.
+@external
+func commit_auction{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    round_num: felt, in_choices_len: felt, in_choices: felt*
+) {
+    alloc_locals;
+
+    if (in_choices_len == 0) {
+        return ();
+    }
+
+    assert_lt(round_num, Game.NUMBER_OF_ROUNDS);
+
+    local market_id = in_choices[in_choices_len-1];
+    local user_id = in_choices_len-1;
+    
+    let (price) = calculate_purchase_price(market_id,round_num);
+
+    if (round_num == 0) {
+        let (previous_balance) = pearls_balance.read(user_id, 0);
+    } else {
+        let prev_round = round_num - 1;
+        let (previous_balance) = pearls_balance.read(user_id, prev_round);
+    }
+
+    // update pearls balance for this round for each player.
+    let (_price) = Math64x61_fromUint256(price);
+    let (_prev_balance) = Math64x61_fromFelt(previous_balance);
+    let (_new_balance) = Math64x61_sub(_price, _prev_balance);
+    let (new_balance) = Math64x61_toFelt(_new_balance);
+    pearls_balance.write(user_id, round_num, new_balance);
+
+    // Update Units sold in this round.
+    inc_units_sold(market_id, round_num);
+
+    // Update purchase price for the market for this round.
+    purchase_price.write(market_id, round_num, price.low);
+
+
+    // keep track of latest round.
+    latest_round.write(round_num);
+
+    return ();
 }

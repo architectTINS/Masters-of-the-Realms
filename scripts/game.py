@@ -55,7 +55,7 @@ def get_number_of_markets():
 
 num_markets = get_number_of_markets()
 
-def initialisa_markets():
+def initialise_markets(): # ignore this function for now.
     for i in range(num_markets):
         wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_units_sold", [i, 5+i])
     wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "set_last_calculated_price", [1, 10])
@@ -63,7 +63,7 @@ def initialisa_markets():
 
 def initialise_players():
     for i in range(num_players):
-        wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "get_energy_units_bought")
+        wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "get_energy_units_bought") # more arguments needed here. will not work.
 
 def set_player_choices_for_the_round(round_num):
 
@@ -107,13 +107,23 @@ def calculate_purchase_price(round_num):
         out = call_or_invoke("game", "call", "calculate_purchase_price", [i,0], network)
         print(f"purchase price for {i} : {out}")
 
+def commit_auction(round_num):
+    choices_list = [marketid[choices[i][round_num]] for i in range(num_players)]
+    choices_list.insert(0,num_players)
+    inputs = choices_list
+    inputs.insert(0, round_num)
+    print(inputs)
+    price = wrapped_send(network, "STARKNET_PRIVATE_KEY", "game", "commit_auction", inputs)
+
+
 def main():
     #create_keys()
-    #initialisa_markets()
+    #initialise_markets()
     #print(type(marketid['B']))
-    #init_pearls_for_all_players()
+    init_pearls_for_all_players()
     #init_purchase_price_for_all_markets()
     calculate_purchase_price(0)
+    commit_auction(0)
 
     # update round_num when you commit to a transaction.
 
