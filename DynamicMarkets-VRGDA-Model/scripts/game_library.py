@@ -88,15 +88,17 @@ def set_choices_for_the_round(round_num):
     # outputs: [1, 1, 1, 2, 2, 2, 3, 3, 3] for round 1
     #for i in range(num_players):
     #    print(MarketID[Choices[i][round_num-1]])
-    choices_list = [MarketID[Choices[i][round_num-1]] for i in range(num_players)]
-    logging.info(f'Food choices to be set for round {round_num}: {choices_list}\n')
-    choices_list.insert(0,num_players)
+    choices_list_rgb = [Choices[i][round_num-1] for i in range(num_players)]
+    logging.info(f'Food choices to be set for round {round_num}: {choices_list_rgb}\n')
+    choices_list_123 = [MarketID[Choices[i][round_num-1]] for i in range(num_players)]
+    #logging.info(f'Food choices to be set for round {round_num}: {choices_list_123}\n')
+    choices_list_123.insert(0,num_players)
 
     #print(type(choices_list))
     #choices_str = ','.join(str(e) for e in choices_list)
     #print(f'{type(choices_str)} : {choices_str}')
 
-    price = wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "set_choices_for_the_round", choices_list)
+    price = wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "set_choices_for_the_round", choices_list_123)
 
 def calculate_food_price(round_num):
     out = []
