@@ -45,8 +45,8 @@ def init_pearls_for_all_players():
 def init_food_data_for_all_options():
     wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "init_food_data_for_all_options", [num_food_options])
 
-def reset_foot_options_demand():
-    wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "reset_foot_options_demand", [3])
+def reset_food_options_demand():
+    wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "reset_food_options_demand", [3])
 
 def reset_game_state():
     wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "reset_game_state", [0])

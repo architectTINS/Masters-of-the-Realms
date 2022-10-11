@@ -79,7 +79,7 @@ def test_resetting_food_options_demand():
     input("Press Enter to continue...")
 
     print(f'\n --- Resetting the demand for food options --- \n')
-    lib.reset_foot_options_demand()
+    lib.reset_food_options_demand()
     out = lib.get_food_options_demand_for_all_options()
     print(f'Food choices after reset: {out}')
 

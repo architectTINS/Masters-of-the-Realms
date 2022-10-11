@@ -240,7 +240,7 @@ func init_food_data_for_all_options{syscall_ptr: felt*, pedersen_ptr: HashBuilti
 }
 
 @external
-func reset_foot_options_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func reset_food_options_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     option_id: felt
 ) -> () {
 
@@ -249,7 +249,7 @@ func reset_foot_options_demand{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
     if(option_id == 0) {
         return ();
     } else {
-        reset_foot_options_demand(option_id - 1);
+        reset_food_options_demand(option_id - 1);
     }
 
     are_choices_set.write(0);
@@ -291,7 +291,7 @@ func set_choices_for_the_round{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
     in_choices_len: felt, in_choices: felt*
 ) -> () {
 
-    reset_foot_options_demand(Game.NUMBER_OF_FOOD_OPTIONS);
+    reset_food_options_demand(Game.NUMBER_OF_FOOD_OPTIONS);
 
     set_food_options_demand_for_the_round(in_choices_len, in_choices);
 
@@ -444,7 +444,7 @@ func commit_food_order{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
     latest_round.write(round_num);
 
     // reset the choices made for this round.
-    reset_foot_options_demand(Game.NUMBER_OF_FOOD_OPTIONS);
+    reset_food_options_demand(Game.NUMBER_OF_FOOD_OPTIONS);
 
     return (res=1);
 }
