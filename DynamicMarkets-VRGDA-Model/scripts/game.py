@@ -117,27 +117,27 @@ def test_check_game_data_after_food_order(round):
     lib.get_game_data_after_a_round(round)
 
 def play_few_rounds():
-    logging.info(f'\n\n-- Initialising all players...\n')
+    logging.info(f'\n\n-- Enrolling all players... All their initial balances are set to 1000 pearls.\n')
     lib.init_pearls_for_all_players()
     input("Press Enter to continue...")
 
-    logging.info(f'\n\n-- Initialising food data for all options...\n')
+    logging.info(f'\n\n-- Initialising target price for all 3 markets (options) ...\n')
     lib.init_food_data_for_all_options()
     input("Press Enter to continue...")
 
-    logging.info(f'\n\n-- Initialising game state ...\n')
+    logging.info(f'\n\n-- Initialising game state. ...\n')
     lib.reset_game_state()
     input("Press Enter to continue...")
 
     round_to_play = 3
     for i in range(round_to_play):
         round = i + 1
-        logging.info(f'\n\n-- commit the order for round {round} for all players ...\n')
 
         logging.info(f'\n-- Set food choices for round {round}...\n')
         lib.set_choices_for_the_round(round)
         input("Press Enter to continue...")
 
+        logging.info(f'\n-- commit the order for round {round} for all players ...\n')
         out = lib.commit_food_order(round)
 
         if (out == 0):
@@ -147,22 +147,22 @@ def play_few_rounds():
         input("Press Enter to continue...")
 
 def play_game():
-    logging.info(f'\n\n-- Initialising all players...\n')
+    logging.info(f'\n\n-- Enrolling all players... All their initial balances are set to 1000 pearls.\n')
     lib.init_pearls_for_all_players()
 
-    logging.info(f'\n\n-- Initialising food data for all options...\n')
+    logging.info(f'\n\n-- Initialising target price for all 3 markets (options) ...\n')
     lib.init_food_data_for_all_options()
 
-    logging.info(f'\n\n-- Initialising game state ...\n')
+    logging.info(f'\n\n-- Initialising game state. ...\n')
     lib.reset_game_state()
 
     for i in range(lib.get_number_of_rounds()):
         round = i + 1
-        logging.info(f'\n\n-- commit the order for round {round} for all players ...\n')
 
         logging.info(f'\n-- Set food choices for round {round}...\n')
         lib.set_choices_for_the_round(round)
 
+        logging.info(f'\n-- commit the order for round {round} for all players ...\n')
         out = lib.commit_food_order(round)
 
         if (out == 0):
@@ -194,6 +194,7 @@ if __name__ == "__main__":
 
     #play_few_rounds()
     #play_game()
+
     lib.get_game_data_after_a_round(10)
     lib.get_demand_vs_pricing_data_for_all_rounds()
     lib.get_player_data_for_all_round()

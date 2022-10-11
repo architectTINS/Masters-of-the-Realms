@@ -3,7 +3,7 @@
 from nile.core.call_or_invoke import call_or_invoke
 from starknet_wrapper import wrapped_send
 from constants import NETWORK
-from game_data import MarketID, Choices
+from game_data import MarketID, Choices, Market_icons
 import logging
 
 
@@ -36,6 +36,8 @@ def get_number_of_rounds():
 num_players = get_number_of_players()
 num_food_options = get_number_of_food_options()
 num_rounds = get_number_of_rounds()
+
+invMarketID = {v: k for k,v in MarketID.items()}
 
 def init_pearls_for_all_players():
     wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "init_pearls_for_all_players", [num_players])
@@ -87,8 +89,8 @@ def set_choices_for_the_round(round_num):
     #for i in range(num_players):
     #    print(MarketID[Choices[i][round_num-1]])
     choices_list = [MarketID[Choices[i][round_num-1]] for i in range(num_players)]
-    choices_list.insert(0,num_players)
     logging.info(f'Food choices to be set for round {round_num}: {choices_list}\n')
+    choices_list.insert(0,num_players)
 
     #print(type(choices_list))
     #choices_str = ','.join(str(e) for e in choices_list)
@@ -125,7 +127,8 @@ def get_food_price_for_all_options(round):
     out = []
     for i in range(num_food_options):
         x = get_food_price(i+1, round)
-        out.insert(i,x)
+        y = invMarketID[i+1] + ":" + str(x)
+        out.insert(i,y)
 
     return (out)
 
@@ -133,7 +136,8 @@ def get_food_sold_for_all_options(round):
     out = []
     for i in range(num_food_options):
         x = get_food_sold(i+1, round)
-        out.insert(i,x)
+        y = invMarketID[i+1] + ":" + str(x)
+        out.insert(i,y)
 
     return (out)
 
@@ -149,8 +153,8 @@ def get_cumulative_food_sold_for_all_options(round):
     out = []
     for i in range(num_food_options):
         x = cumulative_food_sold(i+1, round)
-        #x = call_or_invoke("game", "call", "calculate_cumulative_units_purchased", [i+1, round], NETWORK)
-        out.insert(i,x)
+        y = invMarketID[i+1] + ":" + str(x)
+        out.insert(i,y)
 
     return (out)
 
@@ -179,34 +183,36 @@ def get_pearls_balance_for_all_rounds(option):
     return (out)
 
 def get_game_data_after_a_round(round):
-    logging.info(f' Food prices        for round {round} : {get_food_price_for_all_options(round)}')
-    logging.info(f' Food sold          for round {round} : {get_food_sold_for_all_options(round)}')
-    logging.info(f' Player Balance after   round {round} : {get_pearls_balance_for_all_players(round)}')
-    logging.info(f' Food sold         till round {round} : {get_cumulative_food_sold_for_all_options(round)}')
+    logging.info(f' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    logging.info(f' Food prices           for round {round} 🍎 in each market [R,G,B] : {get_food_price_for_all_options(round)} pearls')
+    logging.info(f' Quantity sold         for round {round} 🥗 in each market [R,G,B] : {get_food_sold_for_all_options(round)}')
+    logging.info(f' Cumulative food sold till round {round} 🫐 in each market [R,G,B] : {get_cumulative_food_sold_for_all_options(round)}')
+    logging.info(f' Player [P1-P9] Balance 💵 after                     day   {round} : {get_pearls_balance_for_all_players(round)} pearls')
+    logging.info(f' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
 def get_demand_vs_pricing_data_for_all_rounds():
-    logging.info(f'\n\n >>> Food price and sold quanity in all round for each of the options...')
+    logging.info(f'\n\n>>> Food price and sold quantity every day for each of the markets...')
     for i in range(num_food_options):
         option_id = i+1
-        logging.info(f'option {option_id} sold in all rounds : {get_food_sold_for_all_rounds(option_id)}')
-        logging.info(f'option {option_id} price in all rounds: {get_food_price_for_all_rounds(option_id)}\n')
+        logging.info(f'Quantity sold in market {invMarketID[option_id]} {Market_icons[option_id]} every day : {get_food_sold_for_all_rounds(option_id)}')
+        logging.info(f'Unit price in market    {invMarketID[option_id]} 💴 every day : {get_food_price_for_all_rounds(option_id)} pearls\n')
 
 def get_player_data_for_all_round():
-    logging.info(f'\n\n >>> Pearls balances for every player after each round...')
-    logging.info(f'This may take a while. Please wait...')
+    logging.info(f'\n\n>>> Balances 💶 for every player after each day 📆 ...')
+    logging.info(f'This may take a while. Please wait... ⏳⏳⏳')
     for i in range(num_players):
         player_id = i + 1
-        logging.info(f'Player {player_id} balance after every hour : {get_pearls_balance_for_all_rounds(player_id)}')
+        logging.info(f'Player {player_id} balance after every day : {get_pearls_balance_for_all_rounds(player_id)} pearls')
 
 def declare_winner():
     out = get_pearls_balance_for_all_players(num_rounds)
     max_value = max(out)
     max_index = out.index(max_value)
-    logging.info(f'\n\n>>>> The WINNER_OF_THE_GAME is Player {max_index+1} ending with balance of {max_value}')
+    logging.info(f'\n\n>>>> 🚀🎆💰 The WINNER_OF_THE_GAME is Player {max_index+1} ending with balance of {max_value} pearls')
 
     min_value = min(out)
     min_index = out.index(min_value)
-    logging.info(f'>>>> Player {min_index+1} spent the most with ending balance of {min_value}')
+    logging.info(f'\n>>>> 💸😞 Player {min_index+1} spent the most with ending balance of {min_value} pearls')
 
 # print(type(MarketID['B']))
 # def misc_functions(): # ignore this function for now.
