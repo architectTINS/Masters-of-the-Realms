@@ -1,4 +1,5 @@
-# Steps to setup development environment
+# Dynamic markets based on VRGDA (Variable Rate Gradual Dutch Auction) model
+## Steps to setup development environment
 1. clone the repo.
 2. cd Master-of-the-Realms/DynamicMarkets-VRGDA-Model
 3. python3.9 -m venv .
@@ -9,7 +10,7 @@
 8. nile init
 9. nile compile
 
-# How to play the game
+## How to play the game
 1. Run nile node in a terminal
 2. In another terminal, run ./scripts/initialise.py. This will deploy an account contract, and the game contract in the local devnet.
 3. Run ./scripts/play_few_days.py to play the game for 3 days of data.
