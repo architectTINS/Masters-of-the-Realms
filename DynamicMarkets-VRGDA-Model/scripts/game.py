@@ -153,6 +153,9 @@ def play_game():
     logging.info(f'\n\n-- Initialising food data for all options...\n')
     lib.init_food_data_for_all_options()
 
+    logging.info(f'\n\n-- Initialising game state ...\n')
+    lib.reset_game_state()
+
     for i in range(lib.get_number_of_rounds()):
         round = i + 1
         logging.info(f'\n\n-- commit the order for round {round} for all players ...\n')
@@ -178,7 +181,7 @@ if __name__ == "__main__":
     #test_calculate_food_price()
 
     #test_commit_food_order(1)
-    test_check_game_data_after_food_order(2)
+    #test_check_game_data_after_food_order(2)
 
     #test_commit_food_order(7)
     #test_commit_food_order(8)
@@ -191,6 +194,10 @@ if __name__ == "__main__":
 
     #play_few_rounds()
     #play_game()
+    lib.get_game_data_after_a_round(10)
+    lib.get_demand_vs_pricing_data_for_all_rounds()
+    lib.get_player_data_for_all_round()
+    lib.declare_winner()
 
     print("")
 
