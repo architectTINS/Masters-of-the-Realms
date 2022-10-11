@@ -11,7 +11,6 @@ namespace Game {
   // This much units are expected to be sold in an hour.
   const UNITS_SCHEDULE = 3;
 
-  // This cannot be changed for this program.
   // Number of time a traveller/player makes food choices.
   const NUMBER_OF_ROUNDS = 10; 
 

@@ -1,6 +1,6 @@
 #!./bin/python
 
-MarketID = {'R':0, 'G':1, 'B': 2}
+MarketID = {'R':1, 'G':2, 'B': 3}
 
 Choices = [
     ['R','R','R','R','R', 'R','R','R','R','R'],

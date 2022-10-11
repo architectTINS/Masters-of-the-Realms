@@ -8,4 +8,4 @@ logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
 Account("STARKNET_PRIVATE_KEY", "localhost")
 
-deploy("balance", None, alias="balance", network="localhost")
+deploy("game", None, alias="game", network="localhost")

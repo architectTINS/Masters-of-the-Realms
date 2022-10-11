@@ -1,3 +1,5 @@
+# This file is taken from realm-contracts.
+
 # First, import click dependency
 import click
 
@@ -9,8 +11,6 @@ from nile.core.account import Account, get_nonce
 from nile import deployments
 from nile.core.call_or_invoke import call_or_invoke
 from constants import MAX_FEE
-
-# This file is taken from realm-contracts.
 
 def send_multi(self, to, method, calldata, nonce=None):
     """Execute a tx going through an Account contract. Inspired from openzeppelin."""
