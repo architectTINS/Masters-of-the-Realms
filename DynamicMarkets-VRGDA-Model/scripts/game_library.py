@@ -79,8 +79,8 @@ def cumulative_food_sold(option_id, round_num):
 
 def set_choices_for_the_round(round_num):
     try:
-        assert round_num > 0, "Assert: round cannot be less than 0."
-        assert round_num <= 10, "Assert: round cannot be more than 10."
+        assert round_num > 0, "Assert: day cannot be less than 0."
+        assert round_num <= 10, "Assert: day cannot be more than 10."
     except AssertionError as msg:
         logging.warning(msg)
         return(0)
@@ -89,9 +89,9 @@ def set_choices_for_the_round(round_num):
     #for i in range(num_players):
     #    print(MarketID[Choices[i][round_num-1]])
     choices_list_rgb = [Choices[i][round_num-1] for i in range(num_players)]
-    logging.info(f'Food choices to be set for round {round_num}: {choices_list_rgb}\n')
+    logging.info(f'Food choices to be set for day {round_num}: {choices_list_rgb}\n')
     choices_list_123 = [MarketID[Choices[i][round_num-1]] for i in range(num_players)]
-    #logging.info(f'Food choices to be set for round {round_num}: {choices_list_123}\n')
+    #logging.info(f'Food choices to be set for day {round_num}: {choices_list_123}\n')
     choices_list_123.insert(0,num_players)
 
     #print(type(choices_list))
@@ -186,10 +186,10 @@ def get_pearls_balance_for_all_rounds(option):
 
 def get_game_data_after_a_round(round):
     logging.info(f' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    logging.info(f' Food prices           for round {round} 🍎 in each market [R,G,B] : {get_food_price_for_all_options(round)} pearls')
-    logging.info(f' Quantity sold         for round {round} 🥗 in each market [R,G,B] : {get_food_sold_for_all_options(round)}')
-    logging.info(f' Cumulative food sold till round {round} 🫐 in each market [R,G,B] : {get_cumulative_food_sold_for_all_options(round)}')
-    logging.info(f' Player [P1-P9] Balance 💵 after                     day   {round} : {get_pearls_balance_for_all_players(round)} pearls')
+    logging.info(f' Food prices           for day {round} 🍎 in each market [R,G,B] : {get_food_price_for_all_options(round)} pearls')
+    logging.info(f' Quantity sold         for day {round} 🥗 in each market [R,G,B] : {get_food_sold_for_all_options(round)}')
+    logging.info(f' Cumulative food sold till day {round} 🫐 in each market [R,G,B] : {get_cumulative_food_sold_for_all_options(round)}')
+    logging.info(f' Player [P1-P9] Balance 💵 after                   day   {round} : {get_pearls_balance_for_all_players(round)} pearls')
     logging.info(f' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
 def get_demand_vs_pricing_data_for_all_rounds():

@@ -27,11 +27,11 @@ def play_few_rounds():
     for i in range(round_to_play):
         round = i + 1
 
-        logging.info(f'\n-- Set food choices for round {round}...\n')
+        logging.info(f'\n-- Set food choices for day {round}...\n')
         lib.set_choices_for_the_round(round)
         input("Press Enter to continue...")
 
-        logging.info(f'\n-- commit the order for round {round} for all players ...\n')
+        logging.info(f'\n-- commit the order for day {round} for all players ...\n')
         out = lib.commit_food_order(round)
 
         if (out == 0):
