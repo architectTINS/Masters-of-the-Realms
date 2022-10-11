@@ -192,13 +192,13 @@ if __name__ == "__main__":
     #test_check_variables_after_food_order(9)
     #test_check_variables_after_food_order(10)
 
-    #play_few_rounds()
+    play_few_rounds()
     #play_game()
 
-    lib.get_game_data_after_a_round(10)
-    lib.get_demand_vs_pricing_data_for_all_rounds()
-    lib.get_player_data_for_all_round()
-    lib.declare_winner()
+    #lib.get_game_data_after_a_round(10)
+    #lib.get_demand_vs_pricing_data_for_all_rounds()
+    #lib.get_player_data_for_all_round()
+    #lib.declare_winner()
 
     print("")
 

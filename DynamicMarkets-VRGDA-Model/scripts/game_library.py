@@ -208,7 +208,7 @@ def declare_winner():
     out = get_pearls_balance_for_all_players(num_rounds)
     max_value = max(out)
     max_index = out.index(max_value)
-    logging.info(f'\n\n>>>> 🚀🎆💰 The WINNER_OF_THE_GAME is Player {max_index+1} ending with balance of {max_value} pearls')
+    logging.info(f'\n\n>>>> 🚀🎆💰 The WINNER_OF_THE_GAME is Player {max_index+1} ending with balance of {max_value} pearls 🎌')
 
     min_value = min(out)
     min_index = out.index(min_value)
