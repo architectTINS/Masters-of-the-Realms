@@ -8,3 +8,6 @@
 7. pip install cairo-nile poetry
 8. nile init
 9. nile compile
+
+
+![20221011 01 221538](https://user-images.githubusercontent.com/114365800/195200000-c6265b45-a23b-4da7-86d7-7a533ffaac50.png)
