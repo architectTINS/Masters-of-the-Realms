@@ -35,4 +35,4 @@ def play_full_game():
         lib.get_game_data_after_a_round(round)
 
 if __name__ == "__main__":
-    play_game()
+    play_full_game()
