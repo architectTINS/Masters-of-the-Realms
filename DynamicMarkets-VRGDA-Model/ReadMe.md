@@ -3,12 +3,11 @@
 1. clone the repo.
 2. cd Master-of-the-Realms/DynamicMarkets-VRGDA-Model
 3. python3.9 -m venv .
-4. ./toold/update_paths.sh
+4. ./tools/update_paths.sh
 5. source bin/activate
 6. pip install --upgrade pip
-7. pip install cairo-nile poetry
-8. nile init
-9. nile compile
+7. pip install cairo-nile==0.9.1 cairo-lang==0.10.0 starknet-devnet==0.3.3
+8. nile compile
 
 ## How to play the game
 1. Run nile node in a terminal
