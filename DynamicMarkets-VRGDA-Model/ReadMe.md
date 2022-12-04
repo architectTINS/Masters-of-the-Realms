@@ -1,13 +1,15 @@
 # Dynamic markets based on VRGDA (Variable Rate Gradual Dutch Auction) model
 ## Steps to setup development environment
-1. clone the repo.
-2. cd Master-of-the-Realms/DynamicMarkets-VRGDA-Model
-3. python3.9 -m venv .
-4. ./tools/update_paths.sh
-5. source bin/activate
+1. Clone sarayu repo https://github.com/architectTINS/sarayu/releases/tag/v0.1 into ~/cairo/tools/sarayu
+2. clone the repo.
+3. cd Master-of-the-Realms/DynamicMarkets-VRGDA-Model
+4. python3.9 -m venv .
+5. ./tools/update_paths.sh
+6. ~/cairo/tools/sarayu/sarayuinit.sh
+7. source bin/activate
 6. pip install --upgrade pip
-7. pip install cairo-nile==0.9.1 cairo-lang==0.10.0 starknet-devnet==0.3.3
-8. nile compile
+7. pip install cairo-nile==0.9.1 cairo-lang==0.10.0 starknet-devnet==0.3.3 click
+8. sarayu compile
 
 ## How to play the game
 1. Run nile node in a terminal

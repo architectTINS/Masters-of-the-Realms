@@ -1,17 +1,16 @@
 #!./bin/python
 
-from nile.core.call_or_invoke import call_or_invoke
-from starknet_wrapper import wrapped_send
 from constants import NETWORK
 from game_data import MarketID, Choices, Market_icons
 import logging
-
+from sarayulib.cmd.invoke import invoke_function as invoke
+from sarayulib.cmd.call import call_function as call
 
 def get_number_of_players():
     """
     Get number of players.
     """
-    num_players = call_or_invoke("game", "call", "get_number_of_players", None, NETWORK)
+    num_players = call("game", "get_number_of_players")
     # logging.info(f'Number of players: {num_players}')
     return int(num_players)
 
@@ -19,7 +18,7 @@ def get_number_of_food_options():
     """
     Get number of food options.
     """
-    num = call_or_invoke("game", "call", "get_number_of_food_options", None, NETWORK)
+    num = call("game", "get_number_of_food_options")
     # logging.info(f'Number of food options: {num}')
     return int(num)
 
@@ -27,7 +26,7 @@ def get_number_of_rounds():
     """
     Get number of rounds in the game.
     """
-    num = call_or_invoke("game", "call", "get_number_of_rounds", None, NETWORK)
+    num = call("game", "get_number_of_rounds")
     # logging.info(f'Number of rounds: {num}')
     return int(num)
 
@@ -40,40 +39,42 @@ num_rounds = get_number_of_rounds()
 invMarketID = {v: k for k,v in MarketID.items()}
 
 def init_pearls_for_all_players():
-    wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "init_pearls_for_all_players", [num_players])
+    invoke("game", "init_pearls_for_all_players", [num_players])
+    #wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "init_pearls_for_all_players", [num_players])
 
 def init_food_data_for_all_options():
-    wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "init_food_data_for_all_options", [num_food_options])
+    invoke("game", "init_food_data_for_all_options", [num_food_options])
 
 def reset_food_options_demand():
-    wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "reset_food_options_demand", [3])
+    invoke("game", "reset_food_options_demand", [3])
 
 def reset_game_state():
-    wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "reset_game_state", [0])
+    invoke("game", "reset_game_state", [0])
 
 
 def get_food_sold(option_id, round_num):
-    out = call_or_invoke("game", "call", "get_food_sold", [option_id, round_num], NETWORK)
+    out = call("game", "get_food_sold", [option_id, round_num])
+    #out = call_or_invoke("game", "call", "get_food_sold", [option_id, round_num], NETWORK)
     return(int(out))
 
 def get_food_price(option_id, round_num):
-    out = call_or_invoke("game", "call", "get_food_price", [option_id, round_num], NETWORK)
+    out = call("game", "get_food_price", [option_id, round_num])
     return(int(out))
 
 def get_food_options_demand(option_id):
-    out = call_or_invoke("game", "call", "get_food_options_demand", [option_id], NETWORK)
+    out = call("game", "get_food_options_demand", [option_id])
     return(int(out))
 
 def get_pearls_balance(player_id, round_num):
-    out = call_or_invoke("game", "call", "get_pearls_balance", [player_id, round_num], NETWORK)
+    out = call("game", "get_pearls_balance", [player_id, round_num])
     return(int(out))
 
 def get_latest_round(player_id, round_num):
-    out = call_or_invoke("game", "call", "get_latest_round", None, NETWORK)
+    out = call("game", "get_latest_round")
     return(int(out))
 
 def cumulative_food_sold(option_id, round_num):
-    out = call_or_invoke("game", "call", "calculate_cumulative_units_purchased", [option_id, round_num], NETWORK)
+    out = call("game", "calculate_cumulative_units_purchased", [option_id, round_num])
     return(int(out))
 
 
@@ -98,12 +99,12 @@ def set_choices_for_the_round(round_num):
     #choices_str = ','.join(str(e) for e in choices_list)
     #print(f'{type(choices_str)} : {choices_str}')
 
-    price = wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "set_choices_for_the_round", choices_list_123)
+    price = invoke("game", "set_choices_for_the_round", choices_list_123)
 
 def calculate_food_price(round_num):
     out = []
     for i in range(num_food_options):
-        x = call_or_invoke("game", "call", "calculate_food_price", [i+1, round_num], NETWORK)
+        x = call("game", "calculate_food_price", [i+1, round_num])
         out.insert(i,x)
     return(out)
 
@@ -113,7 +114,7 @@ def commit_food_order(round_num):
     inputs = choices_list
     inputs.insert(0, round_num)
     #logging.info(f'Food choices to be commited for round {round_num}: {inputs}\n')
-    res = wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "commit_food_order", inputs)
+    res = invoke("game", "commit_food_order", inputs)
     return(res)
 
 
@@ -219,9 +220,9 @@ def declare_winner():
 # print(type(MarketID['B']))
 # def misc_functions(): # ignore this function for now.
 #     for i in range(num_food_options):
-#         wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "set_food_sold", [i, 5+i])
-#     wrapped_send(NETWORK, "STARKNET_PRIVATE_KEY", "game", "set_last_calculated_price", [1, 10])
-#     price = call_or_invoke("game", "call", "get_last_calculated_price", [1], NETWORK); print(price)
+#         invoke("game", "set_food_sold", [i, 5+i])
+#     invoke("game", "set_last_calculated_price", [1, 10])
+#     price = call("game", "get_last_calculated_price", [1]); print(price)
 
 if __name__ == "__main__":
     # args = sys.argv

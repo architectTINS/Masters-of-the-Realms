@@ -1,11 +1,13 @@
 #!./bin/python
 
 import logging
-from nile.core.account import Account
-from nile.core.deploy import deploy
+
+from sarayulib.cmd.compile import compile_contracts
+from sarayulib.cmd.setup import account_setup
+from sarayulib.cmd.deploy import deploy_contract
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
-Account("STARKNET_PRIVATE_KEY", "localhost")
-
-deploy("game", None, alias="game", network="localhost")
+compile_contracts(())
+account_setup("STARKNET_PRIVATE_KEY")
+deploy_contract("game", alias="game")
